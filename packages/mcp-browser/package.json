@@ -48,6 +48,8 @@
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node test.js",
+    "test:ps1": "powershell -ExecutionPolicy Bypass -File test.ps1",
     "clean": "rm -rf build"
   },
   "dependencies": {

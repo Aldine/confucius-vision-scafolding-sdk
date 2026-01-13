@@ -23,6 +23,7 @@ Thumbs.db
 *.js.map
 *.d.ts
 !packages/mcp-browser/src/**/*.ts
+!packages/mcp-browser/test.js
 packages/mcp-browser/dist/
 
 # Logs
