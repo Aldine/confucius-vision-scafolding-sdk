@@ -1,5 +1,5 @@
 {
-  "name": "@confucius/mcp-browser",
+  "name": "@aldine/confucius-mcp-browser",
   "version": "0.1.0",
   "description": "Confucius Browser MCP server + CLI (stdio) - Visual QA and accessibility testing",
   "type": "module",
