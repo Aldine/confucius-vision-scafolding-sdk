@@ -40,18 +40,19 @@ export type Logger = ReturnType<typeof createLogger>;
 
 export function createLogger(opts?: { name?: string; level?: "debug" | "info" | "warn" | "error" }) {
   const name = opts?.name ?? "confucius-mcp-browser";
-  const min = opts?.level ?? (process.env.LOG_LEVEL as any) ?? "info";
+  const min = (opts?.level ?? (process.env.LOG_LEVEL as any) ?? "info") as keyof typeof order;
   const order = { debug: 10, info: 20, warn: 30, error: 40 } as const;
 
   function emit(level: keyof typeof order, event: string, fields?: Record<string, unknown>) {
     if (order[level] < order[min]) return;
     const timestamp = new Date().toISOString();
+    const redacted = redact(fields ?? {}) as Record<string, unknown>;
     const line = JSON.stringify({
       timestamp,
       level,
       name,
       event,
-      ...redact(fields ?? {}),
+      ...redacted,
     });
     writeLine(line);
   }

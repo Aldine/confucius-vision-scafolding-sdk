@@ -19,7 +19,7 @@ function safeUrlForLogs(raw: string): string {
 function toolWrapper<TArgs extends Record<string, unknown>>(
   logger: Logger,
   toolName: string,
-  handler: (args: TArgs, ctx: { traceId: string }) => Promise<{ content: any[]; isError?: boolean; structuredContent?: unknown }>
+  handler: (args: TArgs, ctx: { traceId: string }) => Promise<{ content: any[]; isError?: boolean; structuredContent?: Record<string, unknown> }>
 ) {
   return async (args: TArgs) => {
     const traceId = logger.newTraceId();
@@ -28,7 +28,7 @@ function toolWrapper<TArgs extends Record<string, unknown>>(
     try {
       const result = await handler(args, { traceId });
       logger.info("tool.success", { tool: toolName, traceId });
-      return result;
+      return result as any;
     } catch (err: any) {
       logger.error("tool.error", { 
         tool: toolName, 
@@ -44,7 +44,7 @@ function toolWrapper<TArgs extends Record<string, unknown>>(
           text: `Error (${err.code || "INTERNAL"}): ${err.message}${err.details ? `\nDetails: ${JSON.stringify(err.details)}` : ""}`
         }],
         isError: true
-      };
+      } as any;
     }
   };
 }
@@ -55,8 +55,8 @@ export function registerBrowserTools(server: McpServer, logger: Logger) {
 
   // Tool: open_url
   server.registerTool(
+    "open_url",
     {
-      name: "open_url",
       description: "Navigate to a URL and wait for page load. Defaults to localhost origins only.",
       inputSchema: {
         type: "object",
@@ -82,7 +82,7 @@ export function registerBrowserTools(server: McpServer, logger: Logger) {
           }
         },
         required: ["url"]
-      }
+      } as any
     },
     toolWrapper(logger, "open_url", async (args) => {
       const { url, wait_until = "networkidle", approval_token, timeout_ms = 30000 } = args as {
@@ -119,8 +119,8 @@ export function registerBrowserTools(server: McpServer, logger: Logger) {
 
   // Tool: screenshot
   server.registerTool(
+    "screenshot",
     {
-      name: "screenshot",
       description: "Capture a screenshot of the current page",
       inputSchema: {
         type: "object",
@@ -137,7 +137,7 @@ export function registerBrowserTools(server: McpServer, logger: Logger) {
             default: "png"
           }
         }
-      }
+      } as any
     },
     toolWrapper(logger, "screenshot", async (args) => {
       const { full_page = false, format = "png" } = args as {
@@ -160,8 +160,8 @@ export function registerBrowserTools(server: McpServer, logger: Logger) {
 
   // Tool: console_errors
   server.registerTool(
+    "console_errors",
     {
-      name: "console_errors",
       description: "Get console errors from the page",
       inputSchema: {
         type: "object",
@@ -172,7 +172,7 @@ export function registerBrowserTools(server: McpServer, logger: Logger) {
             default: false
           }
         }
-      }
+      } as any
     },
     toolWrapper(logger, "console_errors", async (args) => {
       const { include_warnings = false } = args as {
@@ -189,11 +189,12 @@ export function registerBrowserTools(server: McpServer, logger: Logger) {
       const messages: any[] = [];
       const cleanup = session.client.on((event) => {
         if (event.method === "Runtime.consoleAPICalled") {
-          const level = event.params?.type;
+          const params = event.params as any;
+          const level = params?.type;
           if (level === "error" || (include_warnings && level === "warning")) {
             messages.push({
               level,
-              message: event.params?.args?.map((a: any) => a.value || a.description).join(" ") || "",
+              message: params?.args?.map((a: any) => a.value || a.description).join(" ") || "",
               timestamp_ms: Date.now()
             });
           }
@@ -218,8 +219,8 @@ export function registerBrowserTools(server: McpServer, logger: Logger) {
 
   // Tool: contrast_audit
   server.registerTool(
+    "contrast_audit",
     {
-      name: "contrast_audit",
       description: "Run WCAG contrast ratio audit on the page",
       inputSchema: {
         type: "object",
@@ -236,7 +237,7 @@ export function registerBrowserTools(server: McpServer, logger: Logger) {
             default: "WCAG21AA"
           }
         }
-      }
+      } as any
     },
     toolWrapper(logger, "contrast_audit", async (args) => {
       const { scope_selector = "body", standard = "WCAG21AA" } = args as {

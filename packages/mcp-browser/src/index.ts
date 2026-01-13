@@ -70,7 +70,7 @@ program
       const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
       
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as any;
         console.log("\n✓ Chrome is accessible");
         console.log(`   Browser: ${data.Browser}`);
         console.log(`   Protocol: ${data["Protocol-Version"]}`);
