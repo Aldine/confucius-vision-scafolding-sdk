@@ -1,0 +1,36 @@
+[project]
+name = "confucius-mcp-browser"
+version = "0.1.0"
+description = "Python wrapper for Confucius Browser MCP server"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+keywords = ["mcp", "model-context-protocol", "browser", "chrome-devtools", "wcag", "accessibility"]
+authors = [
+    {name = "Confucius AI"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/Aldine/llm-council-update"
+Repository = "https://github.com/Aldine/llm-council-update"
+Issues = "https://github.com/Aldine/llm-council-update/issues"
+
+[project.scripts]
+confucius-browser = "confucius_mcp_browser.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["confucius_mcp_browser"]

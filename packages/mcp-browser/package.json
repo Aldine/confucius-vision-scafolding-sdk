@@ -1,0 +1,64 @@
+{
+  "name": "@confucius/mcp-browser",
+  "version": "0.1.0",
+  "description": "Confucius Browser MCP server + CLI (stdio) - Visual QA and accessibility testing",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aldine/llm-council-update.git",
+    "directory": "packages/mcp-browser"
+  },
+  "bugs": {
+    "url": "https://github.com/Aldine/llm-council-update/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "copilot",
+    "claude",
+    "browser",
+    "cdp",
+    "chrome-devtools",
+    "wcag",
+    "accessibility",
+    "visual-qa"
+  ],
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "bin": {
+    "confucius-browser": "./build/index.js"
+  },
+  "files": [
+    "build",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./build/public.d.ts",
+      "import": "./build/public.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "clean": "rm -rf build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "commander": "^12.1.0",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.10",
+    "@types/ws": "^8.5.13",
+    "typescript": "^5.7.2"
+  }
+}
