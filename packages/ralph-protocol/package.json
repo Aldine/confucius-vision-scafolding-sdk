@@ -1,0 +1,46 @@
+{
+  "name": "@aldine/ralph-protocol",
+  "version": "0.1.0",
+  "description": "Ralph Protocol v2 - Global Agent Scaffold System. Text-based OS for LLM agents.",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aldine/confucius-vision-scafolding-sdk.git",
+    "directory": "packages/ralph-protocol"
+  },
+  "keywords": [
+    "llm",
+    "agent",
+    "scaffold",
+    "protocol",
+    "autonomous",
+    "confucius",
+    "ralph",
+    "vscode",
+    "mcp"
+  ],
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "bin": {
+    "ralph": "./build/index.js"
+  },
+  "files": [
+    "build",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}
