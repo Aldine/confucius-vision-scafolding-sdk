@@ -1,7 +1,7 @@
 {
   "name": "@aldine/ralph-protocol",
-  "version": "0.1.0",
-  "description": "Ralph Protocol v2 - Global Agent Scaffold System. Text-based OS for LLM agents.",
+  "version": "0.2.0",
+  "description": "Ralph Protocol v3 - Global Agent Scaffold with 3-Strike Reset and Token Rot Prevention",
   "type": "module",
   "private": false,
   "license": "MIT",
