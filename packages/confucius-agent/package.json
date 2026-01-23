@@ -1,0 +1,57 @@
+{
+  "name": "@aldine/confucius-agent",
+  "version": "1.0.0",
+  "description": "Agentic supervisor CLI and SDK - clean product interface to Confucius recursion engine",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "confucius-run": "./bin/confucius-run.mjs"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "test": "echo \"Wrapper package uses recursion-sdk tests\"",
+    "prepublishOnly": "npm run clean && npm run build",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "agentic",
+    "supervisor",
+    "copilot",
+    "recursion",
+    "proof",
+    "strict-mode"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Aldine/confucius-vision-scafolding-sdk.git"
+  },
+  "author": "Aldine",
+  "license": "MIT",
+  "dependencies": {
+    "@aldine/confucius-recursion-sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "rimraf": "^6.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
