@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "confucius-browser": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@confucius/mcp-browser",
+        "start"
+      ],
+      "env": {
+        "CHROME_HOST": "127.0.0.1",
+        "CHROME_PORT": "9222",
+        "CONFUCIUS_ALLOW_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173"
+      }
+    }
+  }
+}

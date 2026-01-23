@@ -20,10 +20,12 @@ import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROOF_PATH = resolve(__dirname, '..', '.confucius', 'last-proof.json');
-const MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes
+const DEFAULT_MAX_AGE_MIN = 10;
 
 function guardAgenticWork() {
   const enforceAgenticContract = process.env.CONFUCIUS_AGENTIC === 'true';
+  const maxAgeMin = parseInt(process.env.CONFUCIUS_PROOF_MAX_AGE_MIN || String(DEFAULT_MAX_AGE_MIN), 10);
+  const MAX_AGE_MS = maxAgeMin * 60 * 1000;
 
   // Check if proof file exists
   if (!existsSync(PROOF_PATH)) {
@@ -32,21 +34,6 @@ function guardAgenticWork() {
       error: 'proof_missing',
       message: 'No proof artifact found. Run "Confucius: Verify Agent Ready (Strict)" first.',
       proofPath: PROOF_PATH
-    }));
-    process.exit(5);
-  }
-
-  // Check if proof is fresh
-  const stats = statSync(PROOF_PATH);
-  const ageMs = Date.now() - stats.mtimeMs;
-  
-  if (ageMs > MAX_AGE_MS) {
-    console.error(JSON.stringify({
-      ok: false,
-      error: 'proof_stale',
-      message: `Proof is ${Math.floor(ageMs / 1000 / 60)} minutes old. Maximum age: 10 minutes.`,
-      ageMinutes: Math.floor(ageMs / 1000 / 60),
-      maxAgeMinutes: 10
     }));
     process.exit(5);
   }
@@ -62,6 +49,50 @@ function guardAgenticWork() {
       error: 'proof_invalid_json',
       message: 'Proof artifact is not valid JSON',
       parseError: err.message
+    }));
+    process.exit(5);
+  }
+
+  // Check if proof is fresh - ALWAYS enforced, regardless of strictMode
+  // Parse timestampMs from proof (canonical field)
+  let timestampMs;
+  
+  if (typeof proof.timestampMs === 'number') {
+    timestampMs = proof.timestampMs;
+  } else if (typeof proof.timestamp === 'string') {
+    timestampMs = Date.parse(proof.timestamp);
+    if (isNaN(timestampMs)) {
+      console.error(JSON.stringify({
+        ok: false,
+        error: 'proof_timestamp_invalid',
+        message: 'Proof timestamp is not a valid ISO date string',
+        timestamp: proof.timestamp
+      }));
+      process.exit(5);
+    }
+  } else if (typeof proof.writtenAtMs === 'number') {
+    timestampMs = proof.writtenAtMs;
+  } else {
+    console.error(JSON.stringify({
+      ok: false,
+      error: 'missing_timestamp',
+      message: 'Proof artifact missing timestampMs, timestamp, or writtenAtMs field',
+      proof: proof
+    }));
+    process.exit(5);
+  }
+
+  const ageMs = Date.now() - timestampMs;
+  
+  if (ageMs > MAX_AGE_MS) {
+    console.error(JSON.stringify({
+      ok: false,
+      error: 'proof_stale',
+      message: `Proof is ${Math.floor(ageMs / 1000 / 60)} minutes old. Maximum age: ${maxAgeMin} minutes.`,
+      ageMinutes: Math.floor(ageMs / 1000 / 60),
+      maxAgeMinutes: maxAgeMin,
+      timestampMs,
+      now: Date.now()
     }));
     process.exit(5);
   }

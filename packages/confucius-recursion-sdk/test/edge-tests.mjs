@@ -110,8 +110,9 @@ const tests = [
       const stats = statSync(proofPath);
       const elevenMinutesAgo = Date.now() - (11 * 60 * 1000);
       
-      // Read and rewrite to update mtime (simulate stale proof)
+      // Read and rewrite to update timestamp (simulate stale proof)
       const proof = readProof();
+      proof.timestampMs = elevenMinutesAgo; // Canonical field
       proof.timestamp = new Date(elevenMinutesAgo).toISOString();
       writeProof(proof);
       
@@ -177,9 +178,9 @@ const tests = [
         CONFUCIUS_VERBOSE: 'false'
       });
       
-      // forceSleep should cause exit 1 or 5
-      if (result.exitCode === 0) {
-        return { pass: false, reason: 'Exit code 0, but forceSleep should fail' };
+      // forceSleep should cause exit 5 (unskippable)
+      if (result.exitCode !== 5) {
+        return { pass: false, reason: `Exit code ${result.exitCode}, expected 5 for forceSleep` };
       }
       
       const proof = readProof();
@@ -187,9 +188,13 @@ const tests = [
         return { pass: false, reason: 'No proof artifact' };
       }
       
-      // In forceSleep mode, asleepDetector should flag issues
-      if (proof.asleepDetector?.ok !== false) {
-        return { pass: false, reason: 'asleepDetector should fail with forceSleep' };
+      // Proof should record forceSleep=true and ok=false
+      if (proof.forceSleep !== true) {
+        return { pass: false, reason: 'forceSleep should be recorded in proof' };
+      }
+      
+      if (proof.ok !== false) {
+        return { pass: false, reason: 'proof.ok should be false with forceSleep' };
       }
       
       return { pass: true };

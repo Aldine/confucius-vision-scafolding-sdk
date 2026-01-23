@@ -27,9 +27,10 @@ function writeProofArtifact(proof: Record<string, any>): void {
     const proofDir = resolve(__dirname, '..', '.confucius');
     const proofPath = resolve(proofDir, 'last-proof.json');
     
-    // Add trace marker for artifact write
+    // Add trace marker and canonical timestamp for artifact write
     const proofWithMarker = {
       ...proof,
+      timestampMs: Date.now(), // Canonical timestamp field
       traceMarker: 'proof_written',
       proofPath
     };
@@ -103,7 +104,12 @@ async function main() {
       
       const contractMode = strictMode ? 'agentic' : 'local';
       const proofOk = orchResult.ok === true;
-      const contractOk = sleep.ok;
+      let contractOk = sleep.ok;
+      
+      // FORCE_SLEEP overrides everything - always fail
+      if (forceSleep) {
+        contractOk = false;
+      }
       
       const output = {
         ok: contractOk && proofOk,
@@ -128,6 +134,14 @@ async function main() {
       process.stdout.write(JSON.stringify(output, null, 2) + '\n');
       
       // Exit logic for local mode
+      // FORCE_SLEEP always exits 5
+      if (forceSleep) {
+        if (verbose) {
+          console.error('\n🛌 FORCE_SLEEP enabled - Exit code 5');
+        }
+        process.exit(5);
+      }
+      
       if (!contractOk) {
         process.exit(5); // Asleep
       }
@@ -171,7 +185,12 @@ async function main() {
     
     const contractMode = strictMode ? 'agentic' : 'local';
     const proofOk = workerResult?.ok === true;
-    const contractOk = sleep.ok;
+    let contractOk = sleep.ok;
+    
+    // FORCE_SLEEP overrides everything - always fail
+    if (forceSleep) {
+      contractOk = false;
+    }
     
     const output = {
       ok: contractOk && proofOk,
@@ -195,6 +214,14 @@ async function main() {
     process.stdout.write(JSON.stringify(output, null, 2) + '\n');
     
     // Exit logic
+    // FORCE_SLEEP always exits 5 (highest priority)
+    if (forceSleep) {
+      if (verbose) {
+        console.error('\n🛌 FORCE_SLEEP enabled - Exit code 5');
+      }
+      process.exit(5);
+    }
+    
     // Strict mode + not real runtime = tool missing
     if (strictMode && output.runtimeMode !== 'real') {
       if (verbose) {
