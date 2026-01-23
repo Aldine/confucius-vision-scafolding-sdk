@@ -22,10 +22,10 @@ const REQUIRED_FILES = [
   'cli-worker.js',
   'cli.js',
   'index.js',
-  'asleep-detector.js',
   'index.d.ts',
   'cli-worker.d.ts',
-  'asleep-detector.d.ts'
+  'cli.d.ts',
+  'worker/orchestrator.worker.d.ts'
 ];
 
 function checkDistPresence() {
