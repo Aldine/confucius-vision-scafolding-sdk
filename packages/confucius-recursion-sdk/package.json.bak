@@ -1,0 +1,78 @@
+{
+  "name": "@aldine/confucius-recursion-sdk",
+  "version": "0.1.0",
+  "description": "Supervised recursion proof harness with signed trace, quality gates, and strict-mode execution for agentic IDE runtimes.",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "confucius-recursion": "./bin/confucius-recursion.mjs"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "tsup src/index.ts src/cli.ts src/cli-worker.ts src/worker/orchestrator.worker.ts --format esm,cjs --dts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "confucius-run": "node dist/cli.js",
+    "test:asleep": "node dist/cli.js",
+    "test:asleep:expectfail": "node test/expectExit5.mjs",
+    "test:engaged": "npm run build && npm run test:asleep && npm run test:asleep:expectfail",
+    "proof:depth2": "node dist/cli.js --depth 2",
+    "proof:depth3": "node dist/cli.js --depth 3",
+    "proof:strict": "set CONFUCIUS_STRICT_MODE=true&& node dist/cli.js --depth 3",
+    "proof:agentic": "set CONFUCIUS_RUNTIME=agentic&& set CONFUCIUS_STRICT_MODE=true&& node dist/cli.js --depth 3",
+    "prepublishOnly": "npm run clean && npm run build && npm test",
+    "worker:run": "node dist/cli-worker.js",
+    "proof:depth3:worker": "set CONFUCIUS_USE_WORKER=true&& node dist/cli-worker.js --depth 3",
+    "test:asleep:worker": "set CONFUCIUS_USE_WORKER=true&& node dist/cli-worker.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "verify": "npm run typecheck && npm run lint"
+  },
+  "keywords": [
+    "agentic",
+    "recursion",
+    "proof",
+    "supervisor",
+    "quality-gates",
+    "trace",
+    "copilot",
+    "strict-mode"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Aldine/confucius-vision-scafolding-sdk.git"
+  },
+  "author": "Aldine",
+  "license": "MIT",
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
+    "eslint": "^9.0.0",
+    "rimraf": "^6.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^4.0.18"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

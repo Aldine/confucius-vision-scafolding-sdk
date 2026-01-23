@@ -1,0 +1,35 @@
+# Confucius Recursion SDK - .npmignore
+
+# Source files
+src/
+test/
+*.ts
+tsconfig.json
+
+# Development files
+.git/
+.github/
+.vscode/
+node_modules/
+*.log
+
+# Test and coverage
+coverage/
+.nyc_output/
+
+# Build artifacts (keep dist/)
+# dist/ is intentionally NOT ignored
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Config files
+.eslintrc.*
+.prettierrc.*
+vitest.config.*
+
+# Environment
+.env
+.env.*

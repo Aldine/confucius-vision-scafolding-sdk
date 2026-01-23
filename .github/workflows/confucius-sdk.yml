@@ -1,0 +1,108 @@
+name: Confucius SDK CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'packages/confucius-recursion-sdk/**'
+      - '.github/workflows/confucius-sdk.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'packages/confucius-recursion-sdk/**'
+
+jobs:
+  build-and-test:
+    name: Build, Test, and Verify SDK
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: packages/confucius-recursion-sdk
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: packages/confucius-recursion-sdk/package-lock.json
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+      
+      - name: Build SDK
+        run: npm run build
+      
+      - name: Verify build artifacts
+        run: |
+          test -f dist/index.js || exit 1
+          test -f dist/index.cjs || exit 1
+          test -f dist/index.d.ts || exit 1
+          test -f dist/cli-worker.js || exit 1
+          test -f dist/worker/orchestrator.worker.js || exit 1
+          echo "✅ All build artifacts present"
+      
+      - name: Run strict mode proof (simulated)
+        run: |
+          CONFUCIUS_STRICT_MODE=false \
+          CONFUCIUS_USE_WORKER=false \
+          CONFUCIUS_VERBOSE=false \
+          node dist/cli-worker.js > proof-output.json
+          cat proof-output.json
+        continue-on-error: false
+      
+      - name: Verify proof output
+        run: |
+          if ! jq -e '.ok == true' proof-output.json > /dev/null; then
+            echo "❌ Proof failed: ok != true"
+            exit 1
+          fi
+          if ! jq -e '.runtimeMode == "simulated"' proof-output.json > /dev/null; then
+            echo "⚠️  Warning: Expected simulated mode in CI"
+          fi
+          if ! jq -e '.verification.allSignaturesValid == true' proof-output.json > /dev/null; then
+            echo "❌ Signature verification failed"
+            exit 1
+          fi
+          if ! jq -e '.deepestDepthReached >= 2' proof-output.json > /dev/null; then
+            echo "❌ Insufficient recursion depth"
+            exit 1
+          fi
+          echo "✅ Proof verification passed"
+      
+      - name: Run asleep detector
+        run: |
+          node -e "
+          const { asleepDetector } = require('./dist/asleep-detector.js');
+          const fs = require('fs');
+          const proof = JSON.parse(fs.readFileSync('proof-output.json', 'utf-8'));
+          const result = asleepDetector(proof.trace || []);
+          console.log(JSON.stringify(result, null, 2));
+          process.exit(result.ok ? 0 : 5);
+          "
+      
+      - name: Verify package exports
+        run: |
+          node -e "
+          const pkg = require('./package.json');
+          if (!pkg.exports || !pkg.exports['.']) {
+            console.error('❌ Package exports not locked');
+            process.exit(1);
+          }
+          console.log('✅ Package exports locked');
+          console.log(JSON.stringify(pkg.exports, null, 2));
+          "
+      
+      - name: Upload proof artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: confucius-proof
+          path: packages/confucius-recursion-sdk/proof-output.json
+          retention-days: 7
