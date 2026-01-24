@@ -1,6 +1,6 @@
 {
   "name": "@aldine/confucius-recursion-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Supervised recursion proof harness with signed trace, quality gates, and strict-mode execution for agentic IDE runtimes.",
   "type": "module",
   "main": "dist/index.cjs",

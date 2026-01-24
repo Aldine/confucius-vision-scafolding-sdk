@@ -1,6 +1,6 @@
 {
   "name": "@aldine/confucius-agent",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Agentic supervisor CLI and SDK - clean product interface to Confucius recursion engine",
   "type": "module",
   "main": "dist/index.cjs",
@@ -43,7 +43,7 @@
   "author": "Aldine",
   "license": "MIT",
   "dependencies": {
-    "@aldine/confucius-recursion-sdk": "^1.0.0"
+    "@aldine/confucius-recursion-sdk": "^1.0.1"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
