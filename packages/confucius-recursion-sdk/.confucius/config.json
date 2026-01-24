@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0.0",
+  "defaultMode": "agentic",
+  "strictMode": true,
+  "useWorker": true,
+  "proofMaxAgeMin": 10,
+  "notes": {
+    "enabled": true,
+    "dir": ".confucius/notes"
+  }
+}

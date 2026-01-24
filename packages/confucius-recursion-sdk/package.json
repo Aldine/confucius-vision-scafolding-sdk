@@ -37,13 +37,15 @@
     "proof:depth3:worker": "set CONFUCIUS_USE_WORKER=true&& node dist/cli-worker.js --depth 3",
     "test:asleep:worker": "set CONFUCIUS_USE_WORKER=true&& node dist/cli-worker.js",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts",
+    "lint": "eslint . --cache --cache-location .eslintcache --max-warnings 0",
     "verify": "npm run typecheck && npm run lint",
     "test:dist-presence": "node test/dist-presence.mjs",
     "test:edges": "node test/edge-tests.mjs",
     "test:smoke": "node test/smoke-matrix.mjs",
     "test:tamper": "node test/tamper-test.mjs",
-    "test:hardening": "npm run test:dist-presence && npm run test:edges && npm run test:tamper"
+    "test:hardening": "npm run test:dist-presence && npm run test:edges && npm run test:tamper",
+    "lint:fix": "eslint . --fix",
+    "verify:code": "npm run typecheck && npm run lint"
   },
   "keywords": [
     "agentic",
