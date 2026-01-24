@@ -97,7 +97,8 @@ export function runWithWorker(
       }
     })
 
-    worker.on('message', async (msg: WorkerToMainMessage) => {
+    // CONFUCIUS:BEGIN workerOnMessageHandler
+    const handleWorkerMessage = async (msg: WorkerToMainMessage) => {
       try {
         if (msg.type === 'requestSpawn') {
           if (verbose) {
@@ -171,8 +172,18 @@ export function runWithWorker(
         resolvePromise({ ok: false, reason: 'message_handler_error', error: errMsg })
         worker.terminate().catch(() => {})
       }
-    })
+    
+    }
 
+    worker.on('message', (msg: WorkerToMainMessage) => {
+      void handleWorkerMessage(msg).catch((err) => {
+        cleanup()
+        const errMsg = err instanceof Error ? err.message : String(err)
+        resolvePromise({ ok: false, reason: 'message_handler_error', error: errMsg })
+        worker.terminate().catch(() => {})
+      })
+    })
+    // CONFUCIUS:END workerOnMessageHandler
     const start: MainToWorkerMessage = {
       type: 'runTask',
       task,

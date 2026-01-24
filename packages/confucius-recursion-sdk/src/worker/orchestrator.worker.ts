@@ -46,7 +46,8 @@ const createWorkerSpawnAdapter = (): SpawnAdapter => {
   };
 };
 
-parentPort.on('message', async (msg: MainToWorkerMessage) => {
+// CONFUCIUS:BEGIN workerMessageHandler
+const handleWorkerMessage = async (msg: MainToWorkerMessage) => {
   try {
     if (msg.type === 'runTask') {
       const progressMsg: WorkerToMainMessage = {
@@ -105,7 +106,12 @@ parentPort.on('message', async (msg: MainToWorkerMessage) => {
     };
     parentPort!.postMessage(failMsg);
   }
+};
+
+parentPort.on('message', (msg: MainToWorkerMessage) => {
+  void handleWorkerMessage(msg);
 });
+// CONFUCIUS:END workerMessageHandler
 
 const readyMsg: WorkerToMainMessage = {
   type: 'progress',

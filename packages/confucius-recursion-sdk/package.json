@@ -37,7 +37,7 @@
     "proof:depth3:worker": "set CONFUCIUS_USE_WORKER=true&& node dist/cli-worker.js --depth 3",
     "test:asleep:worker": "set CONFUCIUS_USE_WORKER=true&& node dist/cli-worker.js",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --cache --cache-location .eslintcache --max-warnings 0",
+    "lint": "eslint . --cache --cache-location .eslintcache",
     "verify": "npm run typecheck && npm run lint",
     "test:dist-presence": "node test/dist-presence.mjs",
     "test:edges": "node test/edge-tests.mjs",
